@@ -11,8 +11,26 @@ def Login(clientSocket):
     pw = input("PW : ")
     clientSocket.send(id.encode())
     clientSocket.send(pw.encode())
-    loginMsg = clientSocket.recv(1024).decode # Login 결과에 대한 메시지 수신
+    loginMsg = clientSocket.recv(1024).decode() # Login 결과에 대한 메시지 수신
     return loginMsg
+
+# ID와 PW 등록
+def Register(clientSocket):
+    id = input("ID : ")
+    pw = input("PW : ")
+    clientSocket.send(id.encode())
+    clientSocket.send(pw.encode())
+    loginMsg = clientSocket.recv(1024).decode() # Register 결과에 대한 메시지 수신
+    return loginMsg
+
+# PW 변경
+def ChangePw(clientSocket):
+    firstPw = input("PW : ")
+    secondPw = input("Reinput PW : ")
+    clientSocket.send(firstPw.encode())
+    clientSocket.send(secondPw.encode())
+    loginMsg = clientSocket.recv(1024).decode() # ChangePw 결과에 대한 메시지 수신
+    return loginMsg    
 
 # 로그인과 등록 중 하나 선택
 print("1. Login\n2. Register")
@@ -21,28 +39,54 @@ num = input("Input number : ")
 if num == '1' : # 로그인을 선택한 경우
     loginMsg = 'Login'
     clientSocket.send(loginMsg.encode())
-    loginMsg = Login(clientSocket)
 elif num == '2' : # 등록을 선택한 경우
     loginMsg = 'Register'
+    clientSocket.send(loginMsg.encode())
 
 while True:
     if loginMsg == 'Success': # 로그인 성공
-        print("login success!")
+        print("Login success!")
         clientSocket.close()
         break
+    elif loginMsg == 'Login': # 로그인 시도
+        loginMsg = Login(clientSocket)
+    elif loginMsg == 'Register': # 등록
+        loginMsg = Register(clientSocket)
+
+        if loginMsg == 'Register':
+            print("Duplicate ID.. Reinput ID and PW")
+        elif loginMsg == 'Login':
+            print("ID is registered successfully! Input ID and PW for login")
+    elif loginMsg == 'ChangePw': # 비밀번호 변경
+        loginMsg = ChangePw(clientSocket)
+
+        if loginMsg == 'ChangePw':
+            print("New PW and reinputed PW are different.. Reinput PW")
+        elif loginMsg == 'Login':
+            print("PW is changed successfully! Input ID and PW for login")
     elif loginMsg == 'WrongId' : # 입력한 id가 데이터에 없을 때
-        print("Wrogn ID!")
+        print("Wrogng ID..")
         
         # 재입력과 등록 중 선택
         print("1. Reinput\n2. Register")
         num = input("Input num : ")
 
-        # 로그인을 선택한 경우
-        if (num == '1'):
+        if (num == '1'): # 로그인을 선택한 경우
             loginMsg = 'Login'
             clientSocket.send(loginMsg.encode())
-            loginMsg = Login(clientSocket)
+        elif (num == '2'): # 등록을 선택한 경우
+            loginMsg = 'Register'
+            clientSocket.send(loginMsg.encode())
     elif loginMsg == 'WrongPw' : # 입력한 pw가 데이터에 없을 때
-    
+        print("Wrong PW..")
 
+        # 재입력과 비밀번호 변경 중 선택
+        print("1. Reinput\n2. Change PW")
+        num = input("Input num : ")
 
+        if num == '1': # 로그인을 선택한 경우
+            loginMsg = 'Login'
+            clientSocket.send(loginMsg.encode())
+        elif num == '2': # 비밀번호 변경을 선택한 경우
+            loginMsg = 'ChangePw'
+            clientSocket.send(loginMsg.encode())
