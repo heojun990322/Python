@@ -3,7 +3,7 @@ import datetime
 import numpy as np
 import pandas as pd
 
-# 가중 평균 공식을 이용해 다음 예측 값 리턴
+# 지수 이동 평균 공식을 이용해 다음 예측 값 리턴
 def PredictaedValue(alpha, t, tau):
     if alpha == 0:
         newTau = tau
@@ -14,7 +14,7 @@ def PredictaedValue(alpha, t, tau):
     
     return newTau
 
-# 기존 data list에 가중 평균 공식을 이용해 예측 값들의 list 리턴
+# 실제 값들로 이루어진 data list에 지수 이동 평균을 이용해 예측 값들의 list 리턴
 def ExponentialAveraging(dataList, alpha, initialTau):
     predictedList = []
     
@@ -32,8 +32,8 @@ fig = plt.figure(figsize=(12, 8))
 # Define List
 trueDataDateList = []
 predictedDataDateList = []
-trueDataPriceList = [864, 863, 835, 795, 723, 633, 558, 557, 543, 543, 507, 495]
-predictedDataPriceList = ExponentialAveraging(trueDataPriceList, 0.5, 800)
+trueDataPriceList = [864, 863, 835, 795, 723, 633, 558, 557, 543, 543, 507, 495] # 단위는 1천원
+predictedDataPriceList = ExponentialAveraging(trueDataPriceList, 0.5, 800) # alpha 값은 0.5, 초기 Tau 값은 80만원
 
 for i in range(12):
     start_date_true = datetime.datetime(2022, 2, 22)
